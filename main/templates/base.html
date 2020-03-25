@@ -18,8 +18,14 @@
             <li><a href="{% url 'home' %}" class="left brand-logo">&nbsp;&nbsp;Good Boys</a></li>
         </ul>
         <ul class="right">
-          <li><a href="{% url 'dog_create' %}">Add a Dog</a></li>
-          <li><a href="{% url 'home' %}">All Good Boys</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'dog_create' %}">Add a Dog</a></li>
+            <li><a href="{% url 'home' %}">View All My Dogs</a></li>
+            <li><a href="{% url 'logout' %}">Log Out</a></li>
+          {% else %}
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+            <li><a href="{% url 'login' %}">Log In</a></li>
+          {% endif %}
         </ul>
       </div>
     </nav>
