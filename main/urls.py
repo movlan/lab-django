@@ -10,5 +10,10 @@ urlpatterns = [
     path('dog/<int:dog_id>/add_feeding', views.add_feeding, name='add_feeding'),
     path('dog/<int:dog_id>/toy_assoc/<int:toy_id>', views.toy_assoc, name='toy_assoc'),
     path('dog/<int:dog_id>/add_photo', views.add_photo, name='add_photo'),
-    path('accounts/signup/', views.signup, name='signup')
+    path('accounts/signup/', views.signup, name='signup'),
+    path('toys/', views.ToyList.as_view(), name='toys_index'),
+    path('toys/<int:pk>/', views.ToyDetail.as_view(), name='toys_detail'),
+    path('toys/create/', views.ToyCreate.as_view(), name='toys_create'),
+    path('toys/<int:pk>/update/', views.ToyUpdate.as_view(), name='toys_update'),
+    path('toys/<int:pk>/delete/', views.ToyDelete.as_view(), name='toys_delete'),
 ]

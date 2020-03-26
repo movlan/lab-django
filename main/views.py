@@ -1,10 +1,13 @@
 from django.shortcuts import redirect, render
 from django.http import request
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Dog, Toy, Photo
 from .forms import FeedingForm
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 import uuid
 import boto3
 
@@ -12,7 +15,7 @@ S3_BASE_URL = 'https://s3-us-west-1.amazonaws.com/'
 BUCKET = 'b-dogcollector'
 
 
-class DogCreate(CreateView):
+class DogCreate(LoginRequiredMixin, CreateView):
     model = Dog
     fields = ['name', 'breed', 'description', 'age']
 
@@ -21,11 +24,11 @@ class DogCreate(CreateView):
         return super().form_valid(form)
 
 
-class DogUpdate(UpdateView):
+class DogUpdate(LoginRequiredMixin, UpdateView):
     model = Dog
     fields = ['breed', 'description', 'age']
 
-class DogDelete(DeleteView):
+class DogDelete(LoginRequiredMixin, DeleteView):
     model = Dog
     success_url = '/'
 
@@ -39,6 +42,7 @@ def dog(request, dog_id):
     feeding_form = FeedingForm()
     return render( request, 'dog.html', {'dog': dog, 'feeding_form': feeding_form, 'toys': toys_dog_doesnt_have })
 
+@login_required
 def add_feeding(request, dog_id):
   form = FeedingForm(request.POST)
   if form.is_valid():
@@ -47,10 +51,12 @@ def add_feeding(request, dog_id):
     new_feeding.save()
   return redirect('detail', dog_id=dog_id)
 
+@login_required
 def toy_assoc(request, dog_id, toy_id):
     Dog.objects.get(id=dog_id).toys.add(toy_id)
     return redirect('detail', dog_id=dog_id)
 
+@login_required
 def add_photo(request, dog_id):
     # photo-file will be the "name" attribute on the <input type="file">
     photo_file = request.FILES.get('photo-file', None)
@@ -83,3 +89,21 @@ def signup(request):
   form = UserCreationForm()
   context = {'form': form, 'error_message': error_message}
   return render(request, 'registration/signup.html', context)
+
+class ToyList(LoginRequiredMixin, ListView):
+  model = Toy
+
+class ToyDetail(LoginRequiredMixin, DetailView):
+  model = Toy
+
+class ToyCreate(LoginRequiredMixin, CreateView):
+  model = Toy
+  fields = '__all__'
+
+class ToyUpdate(LoginRequiredMixin, UpdateView):
+  model = Toy
+  fields = ['name', 'color']
+
+class ToyDelete(LoginRequiredMixin, DeleteView):
+  model = Toy
+  success_url = '/toys/'
