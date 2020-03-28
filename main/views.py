@@ -107,3 +107,7 @@ class ToyUpdate(LoginRequiredMixin, UpdateView):
 class ToyDelete(LoginRequiredMixin, DeleteView):
   model = Toy
   success_url = '/toys/'
+
+def unassoc_toy(request, dog_id, toy_id):
+  Dog.objects.get(id=dog_id).toys.remove(toy_id)
+  return redirect('detail', dog_id=dog_id)
